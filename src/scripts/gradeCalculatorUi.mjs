@@ -62,28 +62,6 @@ export function initGradeCalculator() {
     toastTimer = window.setTimeout(() => toast.classList.remove('visible'), 2600);
   };
 
-  const themeOptions = [...document.querySelectorAll('[data-theme-option]')];
-  const setThemeOption = (theme) => {
-    for (const option of themeOptions) {
-      option.setAttribute('aria-pressed', String(option.dataset.themeOption === theme));
-    }
-  };
-  setThemeOption(document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light');
-  for (const option of themeOptions) {
-    option.addEventListener('click', () => {
-      const theme = option.dataset.themeOption;
-      if (theme !== 'light' && theme !== 'dark') return;
-      document.documentElement.dataset.theme = theme;
-      document.querySelector('#theme-color-meta')?.setAttribute('content', theme === 'dark' ? '#080808' : '#ffffff');
-      setThemeOption(theme);
-      try {
-        localStorage.setItem('gradewise-theme', theme);
-      } catch {
-        announce('Your theme changed, but this browser could not save your preference.');
-      }
-    });
-  }
-
   const storageAvailable = () => {
     try {
       localStorage.setItem('__gradewise_test__', '1');

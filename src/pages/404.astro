@@ -1,0 +1,14 @@
+---
+import Layout from '../layouts/Layout.astro';
+const title = 'Page not found';
+const description = 'The page you requested could not be found. Return to the GradeWise final grade calculator.';
+---
+
+<Layout title={title} description={description} noindex>
+  <main class="content-page not-found-page">
+    <p class="content-eyebrow">404 · PAGE NOT FOUND</p>
+    <h1>This page isn’t here.</h1>
+    <p class="content-lead">The link may be outdated, or the page may have moved.</p>
+    <p><a href="/">Return to the GradeWise calculator</a></p>
+  </main>
+</Layout>

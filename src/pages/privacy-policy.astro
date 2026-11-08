@@ -1,0 +1,20 @@
+---
+import ContentPage from '../components/ContentPage.astro';
+const title = 'Privacy Policy';
+const description = 'Learn what GradeWise stores in your browser and how the calculator handles information.';
+---
+
+<ContentPage title={title} description={description} eyebrow="PRIVACY">
+  <p><strong>Last updated: November 8, 2026</strong></p>
+  <h2>Information you enter</h2>
+  <p>Grade calculations run in your browser. The calculator does not send the grades or other values you enter to a GradeWise application server. If you choose to save preferences or recent calculations, those values are kept in your browser’s local storage on your device.</p>
+  <h2>Browser storage</h2>
+  <p>GradeWise uses local storage for your selected light or dark theme, grading preferences, and recent calculation history. This data is used to remember your choices and show your recent work in the calculator. It is not a server backup or account record. You can clear it through the calculator’s controls where available or by clearing this site’s data in your browser settings.</p>
+  <p>The site code does not set advertising or analytics cookies. Your hosting provider may process standard request and security information to deliver the site; consult the provider’s privacy information for its handling of that information.</p>
+  <h2>Analytics, advertising, and external services</h2>
+  <p>No analytics or advertising integrations are configured in the GradeWise application code. The contact page links to GitHub, which is an independent third-party service with its own privacy practices. Content you submit there is public and governed by GitHub’s terms and privacy policy.</p>
+  <h2>Your choices and retention</h2>
+  <p>You can use the calculator without creating an account. Local data remains in your browser until you remove it or your browser clears it. Blocking local storage may prevent preferences and history from being saved, but core calculations can still work.</p>
+  <h2>Privacy questions</h2>
+  <p>For a privacy question, use the public <a href="/contact/">contact method</a>. Do not include personal or student information in a public GitHub issue.</p>
+</ContentPage>

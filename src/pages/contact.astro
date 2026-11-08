@@ -1,0 +1,13 @@
+---
+import ContentPage from '../components/ContentPage.astro';
+const title = 'Contact GradeWise';
+const description = 'Send feedback, report a problem, or suggest an improvement to GradeWise.';
+const issuesUrl = 'https://github.com/Amritsubedi999/final-grade-calculator/issues/new';
+---
+
+<ContentPage title={title} description={description} eyebrow="GET IN TOUCH">
+  <h2>How to reach the project</h2>
+  <p>GradeWise does not currently have a contact email or private message form. The project’s public GitHub issue tracker is the available contact method for general questions, feedback, bug reports, feature requests, and collaboration inquiries.</p>
+  <p><a href={issuesUrl} target="_blank" rel="noreferrer">Open a new GitHub issue</a> and choose a clear title that describes what you’re contacting us about. For a bug report, include the page, steps to reproduce it, and your browser if relevant.</p>
+  <p><strong>Please note:</strong> GitHub issues are public. Do not include grades, student records, passwords, contact details, or other private information. An issue may require a GitHub account to submit. There is no promise of a response time.</p>
+</ContentPage>

@@ -53,8 +53,9 @@ for (const filePath of htmlFiles) {
       }
       continue;
     }
-    const url = new URL(href, siteUrl || 'https://local.invalid');
-    if (siteUrl && url.origin !== siteUrl) continue;
+    const linkBase = siteUrl || 'https://local.invalid';
+    const url = new URL(href, linkBase);
+    if (url.origin !== linkBase) continue;
     if (!url.pathname.startsWith('/')) continue;
     const route = url.pathname.endsWith('/') ? url.pathname : url.pathname.replace(/\/index\.html$/, '/').replace(/\.html$/, '');
     if (!htmlByRoute.has(route)) throw new Error(`Broken internal link ${href} in ${filePath}`);

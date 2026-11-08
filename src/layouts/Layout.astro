@@ -1,12 +1,26 @@
 ---
 import '../styles/global.css';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
 
 interface Props {
   title: string;
   description: string;
+  noindex?: boolean;
+  ogType?: 'website' | 'article';
+  breadcrumbs?: { name: string; url: string }[];
+  article?: {
+    title: string;
+    description: string;
+    publishedTime: Date;
+    modifiedTime?: Date;
+    author: string;
+    category: string;
+    tags: string[];
+  };
 }
 
-const { title, description } = Astro.props;
+const { title, description, noindex = false, ogType = 'website', breadcrumbs, article } = Astro.props;
 const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
 const websiteUrl = Astro.site?.href;
 const structuredData = {
@@ -28,9 +42,9 @@ const structuredData = {
       url: canonical,
       inLanguage: 'en',
       isPartOf: websiteUrl ? { '@id': new URL('#website', websiteUrl).href } : undefined,
-      mainEntity: canonical ? { '@id': `${canonical}#calculator` } : undefined,
+      ...(Astro.url.pathname === '/' && canonical ? { mainEntity: { '@id': `${canonical}#calculator` } } : {}),
     },
-    {
+    ...(Astro.url.pathname === '/' ? [{
       '@type': 'WebApplication',
       '@id': canonical ? `${canonical}#calculator` : undefined,
       name: 'GradeWise Final Grade Calculator',
@@ -41,7 +55,30 @@ const structuredData = {
       isAccessibleForFree: true,
       inLanguage: 'en',
       offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-    },
+    }] : []),
+    ...(breadcrumbs && canonical ? [{
+      '@type': 'BreadcrumbList',
+      itemListElement: breadcrumbs.map((item, index) => ({
+        '@type': 'ListItem',
+        position: index + 1,
+        name: item.name,
+        item: new URL(item.url, Astro.site).href,
+      })),
+    }] : []),
+    ...(article && canonical ? [{
+      '@type': 'BlogPosting',
+      '@id': `${canonical}#article`,
+      headline: article.title,
+      description: article.description,
+      datePublished: article.publishedTime.toISOString(),
+      ...(article.modifiedTime ? { dateModified: article.modifiedTime.toISOString() } : {}),
+      author: article.author,
+      articleSection: article.category,
+      keywords: article.tags.join(', '),
+      mainEntityOfPage: canonical,
+      inLanguage: 'en',
+      publisher: { '@type': 'WebSite', '@id': websiteUrl ? new URL('#website', websiteUrl).href : undefined, name: 'GradeWise' },
+    }] : []),
   ],
 };
 ---
@@ -53,8 +90,8 @@ const structuredData = {
     <meta id="theme-color-meta" name="theme-color" content="#ffffff" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="description" content={description} />
-    <meta name="robots" content="index,follow" />
-    <meta property="og:type" content="website" />
+    <meta name="robots" content={noindex ? 'noindex,follow' : 'index,follow'} />
+    <meta property="og:type" content={ogType} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:locale" content="en_US" />
@@ -83,6 +120,26 @@ const structuredData = {
     <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
   </head>
   <body>
+    <SiteHeader />
     <slot />
+    <SiteFooter />
+    <script is:inline>
+      document.querySelectorAll('[data-theme-option]').forEach((option) => {
+        option.addEventListener('click', () => {
+          const theme = option.getAttribute('data-theme-option');
+          if (theme !== 'light' && theme !== 'dark') return;
+          document.documentElement.dataset.theme = theme;
+          document.querySelector('#theme-color-meta')?.setAttribute('content', theme === 'dark' ? '#080808' : '#ffffff');
+          document.querySelectorAll('[data-theme-option]').forEach((button) => {
+            button.setAttribute('aria-pressed', String(button === option));
+          });
+          try {
+            localStorage.setItem('gradewise-theme', theme);
+          } catch {
+            console.warn('GradeWise could not save the selected theme in browser storage.');
+          }
+        });
+      });
+    </script>
   </body>
 </html>

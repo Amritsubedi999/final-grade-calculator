@@ -1,0 +1,31 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+interface Props {
+  title: string;
+  description: string;
+  eyebrow?: string;
+}
+
+const { title, description, eyebrow = 'GRADEWISE' } = Astro.props;
+---
+
+<Layout
+  title={title}
+  description={description}
+  breadcrumbs={[{ name: 'Home', url: '/' }, { name: title, url: Astro.url.pathname }]}
+>
+  <main class="content-page">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">{title}</span>
+    </nav>
+    <header class="content-heading">
+      <p class="content-eyebrow">{eyebrow}</p>
+      <h1>{title}</h1>
+      <p class="content-lead">{description}</p>
+    </header>
+    <div class="prose">
+      <slot />
+    </div>
+  </main>
+</Layout>

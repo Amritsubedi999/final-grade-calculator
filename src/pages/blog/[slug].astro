@@ -1,0 +1,61 @@
+---
+import { getCollection, render } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('blog');
+  return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content, headings } = await render(post);
+const posts = (await getCollection('blog')).filter((item) => item.id !== post.id);
+const relatedPosts = posts.slice(0, 2);
+const readingTime = Math.max(1, Math.ceil(post.body.trim().split(/\s+/).length / 220));
+const articleMeta = {
+  title: post.data.title,
+  description: post.data.description,
+  publishedTime: post.data.pubDate,
+  modifiedTime: post.data.updatedDate,
+  author: post.data.author,
+  category: post.data.category,
+  tags: post.data.tags,
+};
+---
+
+<Layout
+  title={`${post.data.title} | GradeWise`}
+  description={post.data.description}
+  ogType="article"
+  article={articleMeta}
+  breadcrumbs={[{ name: 'Home', url: '/' }, { name: 'Blog', url: '/blog/' }, { name: post.data.title, url: `/blog/${post.id}/` }]}
+>
+  <main class="content-page article-page">
+    <nav class="breadcrumbs" aria-label="Breadcrumb">
+      <a href="/">Home</a><span aria-hidden="true">/</span><a href="/blog/">Blog</a><span aria-hidden="true">/</span><span aria-current="page">{post.data.title}</span>
+    </nav>
+    <article>
+      <header class="article-heading">
+        <p class="content-eyebrow">{post.data.category}</p>
+        <h1>{post.data.title}</h1>
+        <p class="content-lead">{post.data.description}</p>
+        <p class="article-byline">By {post.data.author} · <time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toLocaleDateString('en', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })}</time> · {readingTime} min read</p>
+      </header>
+      <div class="article-layout">
+        {headings.length >= 4 && (
+          <nav class="article-toc" aria-label="Table of contents">
+            <h2>On this page</h2>
+            <ul>{headings.filter((heading) => heading.depth === 2).map((heading) => <li><a href={`#${heading.slug}`}>{heading.text}</a></li>)}</ul>
+          </nav>
+        )}
+        <div class="prose article-prose"><Content /></div>
+      </div>
+    </article>
+    <section class="related-articles" aria-labelledby="related-title">
+      <h2 id="related-title">More grade guides</h2>
+      <div class="related-grid">
+        {relatedPosts.map((related) => <a class="related-card" href={`/blog/${related.id}/`}><span>{related.data.category}</span><strong>{related.data.title}</strong><small>{related.data.description}</small></a>)}
+      </div>
+    </section>
+  </main>
+</Layout>

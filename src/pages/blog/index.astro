@@ -1,0 +1,62 @@
+---
+import { getCollection } from 'astro:content';
+import Layout from '../../layouts/Layout.astro';
+
+const title = 'GradeWise Blog: clear guides to grades and exams';
+const description = 'Practical, step-by-step guides to final exam scores, weighted grades, semester grades, and GPA calculations.';
+const posts = (await getCollection('blog')).sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+const readingTime = (body: string) => Math.max(1, Math.ceil(body.trim().split(/\s+/).length / 220));
+const categories = [...new Set(posts.map((post) => post.data.category))].sort();
+---
+
+<Layout title={title} description={description} breadcrumbs={[{ name: 'Home', url: '/' }, { name: 'Blog', url: '/blog/' }]}>
+  <main class="content-page blog-index">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a><span aria-hidden="true">/</span><span aria-current="page">Blog</span></nav>
+    <header class="content-heading">
+      <p class="content-eyebrow">THE GRADEWISE BLOG</p>
+      <h1>Clear guides for grade questions.</h1>
+      <p class="content-lead">Understand the math behind course grades, final exams, and GPA calculations.</p>
+    </header>
+    <div class="blog-filters">
+      <label>Search articles<input id="article-search" type="search" placeholder="Search by topic or title" /></label>
+      <label>Category<select id="article-category"><option value="">All categories</option>{categories.map((category) => <option value={category.toLowerCase()}>{category}</option>)}</select></label>
+    </div>
+    <p class="sr-only" id="article-results" aria-live="polite"></p>
+    <section class="article-list" aria-label="Articles">
+      {posts.map((post) => (
+        <article class="article-card" data-category={post.data.category.toLowerCase()} data-search={`${post.data.title} ${post.data.description} ${post.data.tags.join(' ')}`.toLowerCase()}>
+          <div class="article-card-meta"><span>{post.data.category}</span><time datetime={post.data.pubDate.toISOString()}>{post.data.pubDate.toLocaleDateString('en', { year: 'numeric', month: 'long', day: 'numeric', timeZone: 'UTC' })}</time><span>{readingTime(post.body)} min read</span></div>
+          <h2><a href={`/blog/${post.id}/`}>{post.data.title}</a></h2>
+          <p>{post.data.description}</p>
+          <a class="article-read-link" href={`/blog/${post.id}/`}>Read article <span aria-hidden="true">→</span></a>
+        </article>
+      ))}
+    </section>
+    <p class="blog-empty" id="article-empty" hidden>No articles match those filters. Try another search or category.</p>
+  </main>
+</Layout>
+
+<script>
+  const search = document.querySelector<HTMLInputElement>('#article-search');
+  const category = document.querySelector<HTMLSelectElement>('#article-category');
+  const cards = [...document.querySelectorAll<HTMLElement>('.article-card')];
+  const empty = document.querySelector<HTMLElement>('#article-empty');
+  const results = document.querySelector<HTMLElement>('#article-results');
+
+  const filterArticles = () => {
+    const query = search?.value.trim().toLowerCase() ?? '';
+    const selectedCategory = category?.value ?? '';
+    let visibleCount = 0;
+    for (const card of cards) {
+      const matches = (card.dataset.search ?? '').includes(query)
+        && (!selectedCategory || card.dataset.category === selectedCategory);
+      card.hidden = !matches;
+      if (matches) visibleCount += 1;
+    }
+    if (empty) empty.hidden = visibleCount > 0;
+    if (results) results.textContent = `${visibleCount} ${visibleCount === 1 ? 'article' : 'articles'} found.`;
+  };
+
+  search?.addEventListener('input', filterArticles);
+  category?.addEventListener('change', filterArticles);
+</script>
