@@ -1,0 +1,88 @@
+---
+import '../styles/global.css';
+
+interface Props {
+  title: string;
+  description: string;
+}
+
+const { title, description } = Astro.props;
+const canonical = Astro.site ? new URL(Astro.url.pathname, Astro.site).href : undefined;
+const websiteUrl = Astro.site?.href;
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      '@id': websiteUrl ? new URL('#website', websiteUrl).href : undefined,
+      name: 'GradeWise',
+      description: 'Final Grade Calculator',
+      url: websiteUrl,
+      inLanguage: 'en',
+    },
+    {
+      '@type': 'WebPage',
+      '@id': canonical ? `${canonical}#webpage` : undefined,
+      name: title,
+      description,
+      url: canonical,
+      inLanguage: 'en',
+      isPartOf: websiteUrl ? { '@id': new URL('#website', websiteUrl).href } : undefined,
+      mainEntity: canonical ? { '@id': `${canonical}#calculator` } : undefined,
+    },
+    {
+      '@type': 'WebApplication',
+      '@id': canonical ? `${canonical}#calculator` : undefined,
+      name: 'GradeWise Final Grade Calculator',
+      applicationCategory: 'EducationalApplication',
+      browserRequirements: 'Requires JavaScript for interactive calculations.',
+      description,
+      url: canonical,
+      isAccessibleForFree: true,
+      inLanguage: 'en',
+      offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    },
+  ],
+};
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta id="theme-color-meta" name="theme-color" content="#ffffff" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="description" content={description} />
+    <meta name="robots" content="index,follow" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="GradeWise" />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <title>{title}</title>
+    <script is:inline>
+      (() => {
+        const key = 'gradewise-theme';
+        let theme = 'light';
+        try {
+          const saved = localStorage.getItem(key);
+          if (saved === 'light' || saved === 'dark') theme = saved;
+        } catch {}
+        const apply = () => {
+          document.documentElement.dataset.theme = theme;
+          document.querySelector('#theme-color-meta')?.setAttribute('content', theme === 'dark' ? '#080808' : '#ffffff');
+        };
+        apply();
+      })();
+    </script>
+    <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
