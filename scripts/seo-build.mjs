@@ -25,6 +25,10 @@ function isIndexable(html) {
   return !robots.some((tag) => /noindex/i.test(extractAttribute(tag, 'content') || ''));
 }
 
+function isGoogleVerificationFile(html) {
+  return /^google-site-verification:\s*[A-Za-z0-9_-]+\.html$/.test(html.trim());
+}
+
 const htmlFiles = await findHtmlFiles(outputDirectory);
 const indexed = [];
 const htmlByRoute = new Map(htmlFiles.map((filePath) => {
@@ -34,6 +38,7 @@ const htmlByRoute = new Map(htmlFiles.map((filePath) => {
 }));
 for (const filePath of htmlFiles) {
   const html = await readFile(filePath, 'utf8');
+  if (isGoogleVerificationFile(html)) continue;
   if (!isIndexable(html)) continue;
   const title = html.match(/<title>([\s\S]*?)<\/title>/i)?.[1]?.trim();
   const descriptionTags = html.match(/<meta\b[^>]*\bname=["']description["'][^>]*>/gi) || [];
