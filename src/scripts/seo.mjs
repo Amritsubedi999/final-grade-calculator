@@ -1,3 +1,5 @@
+export const DEFAULT_SITE_URL = 'https://final-grade-calculator-9ov.pages.dev';
+
 export function normalizeSiteUrl(value) {
   if (!value) return undefined;
   const url = new URL(value);

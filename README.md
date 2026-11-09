@@ -11,7 +11,7 @@ npm test
 npm run build
 ```
 
-Set `SITE_URL` to your deployed origin when building for production (for example, `SITE_URL=https://your-domain.example npm run build`). This sets the absolute canonical URL and generates `dist/sitemap.xml` and `dist/robots.txt`, with the sitemap referenced from robots.txt. A local build without `SITE_URL` checks the HTML and removes any previously generated sitemap and robots file so stale production URLs are not accidentally published.
+The production Pages origin (`https://final-grade-calculator-9ov.pages.dev`) is used by default to set canonical URLs and generate `dist/sitemap.xml` and `dist/robots.txt`, with the sitemap referenced from robots.txt. Set `SITE_URL` to a different deployed origin when building for another domain (for example, `SITE_URL=https://your-domain.example npm run build`).
 
 ## Grading assumptions
 

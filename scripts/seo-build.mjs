@@ -1,9 +1,9 @@
 import { readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import { makeRobotsTxt, makeSitemapXml, normalizeSiteUrl } from '../src/scripts/seo.mjs';
+import { DEFAULT_SITE_URL, makeRobotsTxt, makeSitemapXml, normalizeSiteUrl } from '../src/scripts/seo.mjs';
 
 const outputDirectory = path.resolve('dist');
-const siteUrl = normalizeSiteUrl(process.env.SITE_URL);
+const siteUrl = normalizeSiteUrl(process.env.SITE_URL || DEFAULT_SITE_URL);
 
 async function findHtmlFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
